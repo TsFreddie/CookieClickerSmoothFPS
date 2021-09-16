@@ -78,6 +78,9 @@ Game.registerMod('smoothfps', {
         }
       };
     } else {
+      if (Game.customOptionsMenu == null) {
+        Game.customOptionsMenu = [];
+      }
       Game.customOptionsMenu.push(() => {
         CCSE.AppendOptionsMenu(this.prefMenu());
       });
