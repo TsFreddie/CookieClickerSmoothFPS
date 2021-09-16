@@ -1,0 +1,13 @@
+{
+  "Name": "Smooth Framerate",
+  "ID": "smoothfps",
+  "Author": "TsFreddie",
+  "Description": "Make your game silky smooth (maybe)",
+  "ModVersion": 1,
+  "GameVersion": 2.042,
+  "Date": "16/09/2021",
+  "Dependencies": [],
+  "LanguagePacks": [],
+  "AllowSteamAchievs": false,
+  "Disabled": 1
+}
