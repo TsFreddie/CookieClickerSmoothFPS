@@ -41,7 +41,7 @@ Game.registerMod('smoothfps', {
       '<a class="smallFancyButton option on" id="' +
       button +
       '"' +
-      Game.clickStr +
+      loc(Game.clickStr) +
       '="' +
       callback +
       '">' +
@@ -52,7 +52,9 @@ Game.registerMod('smoothfps', {
 
   prefMenu: function () {
     return (
-      '<div class="title">Smooth framerate</div>' +
+      '<div class="title">' +
+      loc('Smooth framerate') +
+      '</div>' +
       '<div class="listing">' +
       this.button('smoothFpsSelectFPS', 'Set Framerate', 'Game.mods.smoothfps.fpsPrompt();') +
       '<br>' +
@@ -115,8 +117,8 @@ Game.registerMod('smoothfps', {
     localStorageSet('modSmoothFps', fps);
     this.storedFps = fps;
     if (restart) {
-      Game.toSave=true;
-      Game.toReload=true;
+      Game.toSave = true;
+      Game.toReload = true;
     }
   },
 });
