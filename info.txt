@@ -8,6 +8,6 @@
   "Date": "16/09/2021",
   "Dependencies": [],
   "LanguagePacks": [],
-  "AllowSteamAchievs": false,
+  "AllowSteamAchievs": true,
   "Disabled": 1
 }
