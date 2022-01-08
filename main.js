@@ -1,23 +1,50 @@
 Game.registerMod('smoothfps', {
   init: function () {
     this.storedFps = localStorageGet('modSmoothFps') || 30;
+    if (this.storedFps < 1) this.storedFps = 1;
+    if (this.storedFps > 480) this.storedFps = 480;
     Game.fps = this.storedFps;
     const BackupLoop = Game.Loop;
 
     // Destroy game loop, so we can use our own smoother one
     Game.Loop = () => {};
 
-    this.lastFrame = window.performance.now();
+    this.lastFrame = 0;
     this.gameInterval = 1000 / Game.fps;
+
+    const RedundantLoop = () => {
+      if (this.lastFrame == 0) {
+        this.lastFrame = window.performance.now();
+        BackupLoop();
+        return;
+      }
+      
+      const now = window.performance.now();
+      let delta = now - this.lastFrame;
+      let loopCounter = 0;
+      let lastFrame = this.lastFrame;
+      let updateFrameTime = false;
+      while (Math.abs(delta - this.gameInterval) < 0.05 || delta > this.gameInterval) {
+        updateFrameTime = true;
+        lastFrame += this.gameInterval;
+        BackupLoop();
+        loopCounter++;
+        // We are getting more than 5 seconds of delay, reset timer
+        if (loopCounter > Game.fps * 5) {
+          this.lastFrame = now;
+          updateFrameTime = false;
+          break;
+        }
+        delta = now - lastFrame;
+      }
+      if (updateFrameTime) {
+        this.lastFrame = now - (delta % this.gameInterval);
+      }
+    }
 
     const RAFLoop = () => {
       requestAnimationFrame(RAFLoop);
-      const now = window.performance.now();
-      const delta = now - this.lastFrame;
-      if (Math.abs(delta - this.gameInterval) < 0.05 || delta > this.gameInterval) {
-        this.lastFrame = now - (delta % this.gameInterval);
-        BackupLoop();
-      }
+      RedundantLoop();
     };
 
     // Lauch game loop
@@ -25,10 +52,11 @@ Game.registerMod('smoothfps', {
 
     const BackgroundLoop = () => {
       if (Game.visible) return;
-      BackupLoop();
+      RedundantLoop();
     };
 
-    this.backgroundLoop = setInterval(BackgroundLoop, 1000 / Game.fps);
+    this.backgroundLoop = setInterval(BackgroundLoop, 100);
+    console.log("Loop setup");
 
     // add menu
     this.setupMenuHook();
@@ -114,6 +142,8 @@ Game.registerMod('smoothfps', {
 
   setFps: function (fps, restart = false) {
     if (fps == null || isNaN(fps)) return;
+    if (fps < 1) fps = 1;
+    if (fps > 480) fps = 480;
     localStorageSet('modSmoothFps', fps);
     this.storedFps = fps;
     if (restart) {
